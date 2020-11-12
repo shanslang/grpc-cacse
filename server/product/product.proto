@@ -1,0 +1,16 @@
+syntax="proto3";
+
+package services;
+option go_package = "../services;services"; // 前一个services指生成的go文件的存放目录，不存在会创建；后一个services是go文件的包名
+
+message ProductRequest{
+    int32 product_id = 1;
+}
+
+message ProductRespones{
+    int32 product_stock = 1;
+}
+
+service ProductService{
+    rpc GetProductStock(ProductRequest) returns (ProductRespones);
+}

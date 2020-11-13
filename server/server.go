@@ -1,8 +1,11 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"grpc-case/server/services"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -11,10 +14,18 @@ import (
 )
 
 func main() {
-	creds, err := credentials.NewServerTLSFromFile("keys/example.com.cert", "keys/example.com.key")
+	cert, err := tls.LoadX509KeyPair("cert/server.crt", "cert/server.key")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("LoadX509KeyPair: ", err)
 	}
+	certPool := x509.NewCertPool()
+	ca, _ := ioutil.ReadFile("cert/ca.crt")
+	certPool.AppendCertsFromPEM(ca)
+	creds := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{cert},        // 服务端证书
+		ClientAuth:   tls.RequireAndVerifyClientCert, // 双向验证
+		ClientCAs:    certPool,
+	})
 
 	rpcServer := grpc.NewServer(grpc.Creds(creds))
 	services.RegisterProductServiceServer(rpcServer, new(services.ProductService))
@@ -35,6 +46,5 @@ func main() {
 		Addr:    ":8081",
 		Handler: mux,
 	}
-	// httpServer.ListenAndServe() // 无证书方式 // http://localhost:8081/
-	httpServer.ListenAndServeTLS("keys/example.com.cert", "keys/example.com.key") // 证书验证 // https://localhost:8081/
+	httpServer.ListenAndServeTLS("cert/server.crt", "cert/server.key")
 }

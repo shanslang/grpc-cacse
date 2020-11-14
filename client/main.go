@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"grpc-case/client/helper"
-	"grpc-case/client/services"
+	. "grpc-case/client/services"
 	"log"
 
 	"google.golang.org/grpc"
@@ -17,19 +17,19 @@ func main() {
 	}
 	defer conn.Close()
 
-	productClient := services.NewProductServiceClient(conn)
+	productClient := NewProductServiceClient(conn)
 	ctx := context.Background()
 
-	// productRes, err := productClient.GetProductStock(context.Background(),
-	// 	&services.ProductRequest{ProductId: 1})
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println(productRes.ProductStock)
-
-	products, err := productClient.GetProductStocks(ctx, &services.QuerySize{Size: 10})
+	productRes, err := productClient.GetProductStock(ctx,
+		&ProductRequest{ProductId: 1, ProductArea: ProdctAreas_C})
 	if err != nil {
-		log.Fatal("GetProductStocks: ", err)
+		log.Fatal(err)
 	}
-	fmt.Println(products.Products)
+	fmt.Println(productRes.ProductStock)
+
+	// products, err := productClient.GetProductStocks(ctx, &services.QuerySize{Size: 10})
+	// if err != nil {
+	// 	log.Fatal("GetProductStocks: ", err)
+	// }
+	// fmt.Println(products.Products)
 }

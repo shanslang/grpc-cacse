@@ -12,11 +12,21 @@ message ProductRespones{
     int32 product_stock = 1;
 }
 
+message QuerySize{
+    int32 size=1; // 页尺寸
+}
+
+message ProductResponesList{ // repeated: 是一个修饰符，返回字段可以重复任意多次（包括0次）；因为rpc是跨平台，跨语言的，所以不能使用go语法来定义切片，得使用修饰符，这样就可以把这个修饰符修饰的字段看作切片
+    repeated ProductRespones products = 1; // 返回0或多个ProductRespones
+}
+
 service ProductService{
     rpc GetProductStock(ProductRequest) returns (ProductRespones){
         option (google.api.http) = {
             // localhost:8080/v1/prod/33
             get: "/v1/prod/{product_id}"  // 这里的{product_id}和message ProductRequest{int32 product_id = 1;} 是对应的，不能随意写，要和这个定义的名称一样
         };
-    };
+    }
+
+    rpc GetProductStocks(QuerySize) returns(ProductResponesList){}
 }

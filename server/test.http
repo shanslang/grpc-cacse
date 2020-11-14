@@ -5,5 +5,18 @@ Content-Type: application/json
 {
     "order_no": "ddhao",
     "user_id": 123,
-    "order_money":33.4
+    "order_money":33.4,
+    "order_details":[{
+        "detail_id":11,
+        "order_no":"childrenDdh",
+        "product_id":32,
+        "product_price":23.3,
+        "product_num":5
+    },{
+        "detail_id":22,
+        "order_no":"childrenDdh2",
+        "product_id":32,
+        "product_price":23.3,
+        "product_num":15
+    }]
 }

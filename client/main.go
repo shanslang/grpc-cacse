@@ -44,7 +44,7 @@ func main() {
 	// 调用订单服务方法
 	orderClient := NewOrderServiceClient(conn)
 	t := timestamp.Timestamp{Seconds: time.Now().Unix()}
-	newOrder, err := orderClient.NewOrder(ctx, &OrderMain{OrderId: 1, OrderNo: "ddh", OrderMoney: 33.3, OrderTime: &t})
+	newOrder, err := orderClient.NewOrder(ctx, &OrderRequest{OrderMain: &OrderMain{OrderId: 1, OrderNo: "ddh", OrderMoney: 33.3, OrderTime: &t}})
 	if err != nil {
 		log.Fatal("NewOrder: ", err)
 	}

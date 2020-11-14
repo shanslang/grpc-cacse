@@ -1,0 +1,9 @@
+@baseURL=http://localhost:8080
+POST {{baseURL}}/v1/orders
+Content-Type: application/json
+
+{
+    "order_no": "ddhao",
+    "user_id": 123,
+    "order_money":33.4
+}

@@ -8,8 +8,8 @@ import (
 type OrderService struct {
 }
 
-func (this *OrderService) NewOrder(ctx context.Context, orderMain *OrderMain) (*OrderResponse, error) {
-	fmt.Println(orderMain)
+func (this *OrderService) NewOrder(ctx context.Context, orderRequest *OrderRequest) (*OrderResponse, error) {
+	fmt.Println(orderRequest.OrderMain)
 	return &OrderResponse{
 		Status:  "OK",
 		Message: "success",

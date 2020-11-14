@@ -1,6 +1,7 @@
 syntax="proto3";
 
 package services;
+import "google/api/annotations.proto";
 option go_package = "../services;services"; // 前一个services指生成的go文件的存放目录，不存在会创建；后一个services是go文件的包名
 
 message ProductRequest{
@@ -12,5 +13,10 @@ message ProductRespones{
 }
 
 service ProductService{
-    rpc GetProductStock(ProductRequest) returns (ProductRespones);
+    rpc GetProductStock(ProductRequest) returns (ProductRespones){
+        option (google.api.http) = {
+            // localhost:8080/v1/prod/33 https://localhost:8080/v1/prod/33
+            get: "/v1/prod/{product_id}"  // 这里的{product_id}和message ProductRequest{int32 product_id = 1;} 是对应的，不能随意写，要和这个定义的名称一样
+        };
+    };
 }

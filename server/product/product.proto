@@ -2,6 +2,7 @@ syntax="proto3";
 
 package services;
 import "google/api/annotations.proto";
+import "models.proto";
 option go_package = "../services;services"; // 前一个services指生成的go文件的存放目录，不存在会创建；后一个services是go文件的包名
 
 enum ProdctAreas{ // 枚举类型；每个枚举类型必须将其第一个类型映射为0
@@ -37,4 +38,6 @@ service ProductService{
     }
 
     rpc GetProductStocks(QuerySize) returns(ProductResponesList){}
+
+    rpc GetProductInfo(ProductRequest) returns(ProductModel){} // 因为这里的models.proto中的包名和product.proto包名一样，所以这里直接使用ProductModel，如果包名不一样，则需要 包名.ProductModel
 }

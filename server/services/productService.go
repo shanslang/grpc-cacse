@@ -28,6 +28,14 @@ func (this *ProductService) GetProductStocks(ctx context.Context, size *QuerySiz
 	return &ProductResponesList{Products: products}, nil
 }
 
+func (this *ProductService) GetProductInfo(context.Context, *ProductRequest) (*ProductModel, error) {
+	return &ProductModel{
+		ProductId:    101,
+		ProductName:  "书本",
+		ProductPrice: 23.3,
+	}, nil
+}
+
 func (this *ProductService) mustEmbedUnimplementedProductServiceServer() {
 
 }

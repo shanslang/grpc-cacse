@@ -20,16 +20,23 @@ func main() {
 	productClient := NewProductServiceClient(conn)
 	ctx := context.Background()
 
-	productRes, err := productClient.GetProductStock(ctx,
-		&ProductRequest{ProductId: 1, ProductArea: ProdctAreas_C})
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(productRes.ProductStock)
+	// productRes, err := productClient.GetProductStock(ctx,
+	// 	&ProductRequest{ProductId: 1, ProductArea: ProdctAreas_C})
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println(productRes.ProductStock)
 
 	// products, err := productClient.GetProductStocks(ctx, &services.QuerySize{Size: 10})
 	// if err != nil {
 	// 	log.Fatal("GetProductStocks: ", err)
 	// }
 	// fmt.Println(products.Products)
+
+	productModel, err := productClient.GetProductInfo(ctx, &ProductRequest{ProductId: 12})
+	if err != nil {
+		log.Fatal("GetProductStocks: ", err)
+	}
+	fmt.Println(productModel) // product_id:101 product_name:"书本" product_price:23.3
+
 }

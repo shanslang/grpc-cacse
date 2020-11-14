@@ -6,7 +6,9 @@ import (
 	"grpc-case/client/helper"
 	. "grpc-case/client/services"
 	"log"
+	"time"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/grpc"
 )
 
@@ -38,5 +40,14 @@ func main() {
 		log.Fatal("GetProductStocks: ", err)
 	}
 	fmt.Println(productModel) // product_id:101 product_name:"书本" product_price:23.3
+
+	// 调用订单服务方法
+	orderClient := NewOrderServiceClient(conn)
+	t := timestamp.Timestamp{Seconds: time.Now().Unix()}
+	newOrder, err := orderClient.NewOrder(ctx, &OrderMain{OrderId: 1, OrderNo: "ddh", OrderMoney: 33.3, OrderTime: &t})
+	if err != nil {
+		log.Fatal("NewOrder: ", err)
+	}
+	fmt.Println(newOrder) // status:"OK" message:"success"
 
 }

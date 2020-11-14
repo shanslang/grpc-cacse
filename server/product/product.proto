@@ -15,7 +15,7 @@ message ProductRespones{
 service ProductService{
     rpc GetProductStock(ProductRequest) returns (ProductRespones){
         option (google.api.http) = {
-            // localhost:8080/v1/prod/33 https://localhost:8080/v1/prod/33
+            // localhost:8080/v1/prod/33
             get: "/v1/prod/{product_id}"  // 这里的{product_id}和message ProductRequest{int32 product_id = 1;} 是对应的，不能随意写，要和这个定义的名称一样
         };
     };

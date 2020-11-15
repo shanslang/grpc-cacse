@@ -13,4 +13,7 @@ message UserScoreResponse{
 
 service UserService{
     rpc GetUserScore(UserScoreRequest) returns(UserScoreResponse){}
+
+    // 服务端流模式，分批发送(返回要加上stream)
+    rpc GetUserScoreByServerStream(UserScoreRequest) returns(stream UserScoreResponse){}
 }

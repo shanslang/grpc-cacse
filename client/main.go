@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"grpc-case/client/helper"
 	. "grpc-case/client/services"
+	"io"
 	"log"
 	"time"
 
@@ -58,9 +59,25 @@ func main() {
 			UserId: int32(i),
 		})
 	}
-	userScore, err := userClient.GetUserScore(ctx, &UserScoreRequest{Users: users})
+	// userScore, err := userClient.GetUserScore(ctx, &UserScoreRequest{Users: users})
+	// if err != nil {
+	// 	log.Fatal("GetUserScore", err)
+	// }
+	// fmt.Println(userScore.Users)
+
+	stream, err := userClient.GetUserScoreByServerStream(ctx, &UserScoreRequest{Users: users})
 	if err != nil {
 		log.Fatal("GetUserScore", err)
 	}
-	fmt.Println(userScore.Users)
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal("Recv:", err)
+		}
+		fmt.Println(res.Users)
+	}
+
 }

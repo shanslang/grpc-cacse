@@ -101,4 +101,29 @@ func main() {
 		log.Fatal("CloseAndRecv", err)
 	}
 	fmt.Println(res.Users)
+
+	// 双向流模式
+	clients, err := userClient.GetUserScoreByCSStream(ctx)
+	if err != nil {
+		log.Fatal("GetUserScoreByCSStream:", err)
+	}
+	for j := 1; j < 4; j++ {
+		req := UserScoreRequest{}
+		req.Users = make([]*UserInfo, 0)
+		for i := 1; i < 6; i++ {
+			req.Users = append(req.Users, &UserInfo{UserId: int32(i)})
+		}
+		err := clients.Send(&req) // 只是向服务端发送数据
+		if err != nil {
+			fmt.Println(err)
+		}
+		res, err := clients.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Println(err)
+		}
+		fmt.Println("suan:", res.Users)
+	}
 }

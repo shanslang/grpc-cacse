@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"io"
 )
 
@@ -64,6 +65,30 @@ func (this *UserService) GetUserScoreByClientStream(in UserService_GetUserScoreB
 			user.UserScore = score
 			score++
 			users = append(users, user)
+		}
+	}
+}
+
+func (this *UserService) GetUserScoreByCSStream(in UserService_GetUserScoreByCSStreamServer) error {
+	var score int32 = 101
+	users := make([]*UserInfo, 0)
+	for {
+		req, err := in.Recv()
+		if err == io.EOF { // 服务端接收完数据
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		for _, user := range req.Users {
+			user.UserScore = score
+			score++
+			users = append(users, user)
+		}
+		err = in.Send(&UserScoreResponse{Users: users})
+		if err != nil {
+			fmt.Println(err)
 		}
 	}
 }

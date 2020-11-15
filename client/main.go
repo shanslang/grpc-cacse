@@ -50,4 +50,17 @@ func main() {
 	}
 	fmt.Println(newOrder) // status:"OK" message:"success"
 
+	// 调用用户服务
+	userClient := NewUserServiceClient(conn)
+	users := make([]*UserInfo, 0)
+	for i := 1; i < 6; i++ {
+		users = append(users, &UserInfo{
+			UserId: int32(i),
+		})
+	}
+	userScore, err := userClient.GetUserScore(ctx, &UserScoreRequest{Users: users})
+	if err != nil {
+		log.Fatal("GetUserScore", err)
+	}
+	fmt.Println(userScore.Users)
 }

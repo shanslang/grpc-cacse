@@ -4,3 +4,5 @@ protoc --go_out=../services orders.proto
 protoc --go-grpc_out=../services orders.proto
 protoc --grpc-gateway_out=logtostderr=true:../services product.proto
 protoc --grpc-gateway_out=logtostderr=true:../services orders.proto
+protoc --go_out=../services user.proto
+protoc --go-grpc_out=../services user.proto

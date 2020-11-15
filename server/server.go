@@ -14,6 +14,7 @@ func main() {
 	rpcServer := grpc.NewServer(grpc.Creds(creds))
 	services.RegisterProductServiceServer(rpcServer, new(services.ProductService)) // 商品服务
 	services.RegisterOrderServiceServer(rpcServer, new(services.OrderService))     // 订单服务
+	services.RegisterUserServiceServer(rpcServer, new(services.UserService))       // 用户服务
 
 	// 方式一：tcp
 	lis, _ := net.Listen("tcp", ":8081")

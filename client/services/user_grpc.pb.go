@@ -20,6 +20,8 @@ type UserServiceClient interface {
 	GetUserScore(ctx context.Context, in *UserScoreRequest, opts ...grpc.CallOption) (*UserScoreResponse, error)
 	// 服务端流模式，分批发送(返回要加上stream)
 	GetUserScoreByServerStream(ctx context.Context, in *UserScoreRequest, opts ...grpc.CallOption) (UserService_GetUserScoreByServerStreamClient, error)
+	// 客户端流模式，分批发送请求
+	GetUserScoreByClientStream(ctx context.Context, opts ...grpc.CallOption) (UserService_GetUserScoreByClientStreamClient, error)
 }
 
 type userServiceClient struct {
@@ -71,6 +73,40 @@ func (x *userServiceGetUserScoreByServerStreamClient) Recv() (*UserScoreResponse
 	return m, nil
 }
 
+func (c *userServiceClient) GetUserScoreByClientStream(ctx context.Context, opts ...grpc.CallOption) (UserService_GetUserScoreByClientStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_UserService_serviceDesc.Streams[1], "/services.UserService/GetUserScoreByClientStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &userServiceGetUserScoreByClientStreamClient{stream}
+	return x, nil
+}
+
+type UserService_GetUserScoreByClientStreamClient interface {
+	Send(*UserScoreRequest) error
+	CloseAndRecv() (*UserScoreResponse, error)
+	grpc.ClientStream
+}
+
+type userServiceGetUserScoreByClientStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *userServiceGetUserScoreByClientStreamClient) Send(m *UserScoreRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *userServiceGetUserScoreByClientStreamClient) CloseAndRecv() (*UserScoreResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(UserScoreResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -78,6 +114,8 @@ type UserServiceServer interface {
 	GetUserScore(context.Context, *UserScoreRequest) (*UserScoreResponse, error)
 	// 服务端流模式，分批发送(返回要加上stream)
 	GetUserScoreByServerStream(*UserScoreRequest, UserService_GetUserScoreByServerStreamServer) error
+	// 客户端流模式，分批发送请求
+	GetUserScoreByClientStream(UserService_GetUserScoreByClientStreamServer) error
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -90,6 +128,9 @@ func (UnimplementedUserServiceServer) GetUserScore(context.Context, *UserScoreRe
 }
 func (UnimplementedUserServiceServer) GetUserScoreByServerStream(*UserScoreRequest, UserService_GetUserScoreByServerStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetUserScoreByServerStream not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserScoreByClientStream(UserService_GetUserScoreByClientStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetUserScoreByClientStream not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -143,6 +184,32 @@ func (x *userServiceGetUserScoreByServerStreamServer) Send(m *UserScoreResponse)
 	return x.ServerStream.SendMsg(m)
 }
 
+func _UserService_GetUserScoreByClientStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(UserServiceServer).GetUserScoreByClientStream(&userServiceGetUserScoreByClientStreamServer{stream})
+}
+
+type UserService_GetUserScoreByClientStreamServer interface {
+	SendAndClose(*UserScoreResponse) error
+	Recv() (*UserScoreRequest, error)
+	grpc.ServerStream
+}
+
+type userServiceGetUserScoreByClientStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *userServiceGetUserScoreByClientStreamServer) SendAndClose(m *UserScoreResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *userServiceGetUserScoreByClientStreamServer) Recv() (*UserScoreRequest, error) {
+	m := new(UserScoreRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 var _UserService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "services.UserService",
 	HandlerType: (*UserServiceServer)(nil),
@@ -157,6 +224,11 @@ var _UserService_serviceDesc = grpc.ServiceDesc{
 			StreamName:    "GetUserScoreByServerStream",
 			Handler:       _UserService_GetUserScoreByServerStream_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "GetUserScoreByClientStream",
+			Handler:       _UserService_GetUserScoreByClientStream_Handler,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "user.proto",

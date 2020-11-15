@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"io"
 )
 
 type UserService struct {
@@ -44,6 +45,27 @@ func (this *UserService) GetUserScoreByServerStream(in *UserScoreRequest, s User
 		}
 	}
 	return nil
+}
+
+// 客户端流模式
+func (this *UserService) GetUserScoreByClientStream(in UserService_GetUserScoreByClientStreamServer) error {
+	var score int32 = 101
+	users := make([]*UserInfo, 0)
+	for {
+		req, err := in.Recv()
+		if err == io.EOF { // 服务端接收完数据后回数据给客户端
+			return in.SendAndClose(&UserScoreResponse{Users: users})
+		}
+		if err != nil {
+			return err
+		}
+
+		for _, user := range req.Users {
+			user.UserScore = score
+			score++
+			users = append(users, user)
+		}
+	}
 }
 
 func (this *UserService) mustEmbedUnimplementedUserServiceServer() {

@@ -16,4 +16,7 @@ service UserService{
 
     // 服务端流模式，分批发送(返回要加上stream)
     rpc GetUserScoreByServerStream(UserScoreRequest) returns(stream UserScoreResponse){}
+
+    // 客户端流模式，分批发送请求
+    rpc GetUserScoreByClientStream(stream UserScoreRequest)returns(UserScoreResponse){}
 }

@@ -80,4 +80,25 @@ func main() {
 		fmt.Println(res.Users)
 	}
 
+	// 客户端流模式发送请求
+	streatClient, err := userClient.GetUserScoreByClientStream(ctx)
+	if err != nil {
+		log.Fatal("GetUserScoreByClientStream:", err)
+	}
+	for j := 1; j < 4; j++ {
+		req := UserScoreRequest{}
+		req.Users = make([]*UserInfo, 0)
+		for i := 1; i < 6; i++ {
+			req.Users = append(req.Users, &UserInfo{UserId: int32(i)})
+		}
+		err := streatClient.Send(&req) // 只是向服务端发送数据
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	res, err := streatClient.CloseAndRecv() // 接收服务端响应数据
+	if err != nil {
+		log.Fatal("CloseAndRecv", err)
+	}
+	fmt.Println(res.Users)
 }
